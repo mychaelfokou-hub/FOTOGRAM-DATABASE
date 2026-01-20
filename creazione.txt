@@ -1,0 +1,158 @@
+-- ====================== 
+-- TABELLA: UTENTE
+-- ======================
+CREATE TABLE Utente (
+    username VARCHAR(30) PRIMARY KEY,
+    password TEXT NOT NULL,
+    mail VARCHAR(100) UNIQUE NOT NULL,
+    imgProfilo VARCHAR(255)
+);
+
+INSERT INTO Utente (username, password, mail, imgProfilo) VALUES
+('alice',  '8760d58249886c61850cb606a8ff6cf5896b8a512c11134c97f752da5decc2d0c1370a84fb91308c6850a5e32f7624713aec0989584280e2044f8d612f541581.2bcd3e9c3a5c8f176e8a9d2a0173e598', 'alice@mail.com',  'alice.jpg'), 
+('david',  '720654043e58d565a96dbf7168d233c6724a01e0fb8057c91ee6d07eb226e204ec5b238382fba5aa4426b213f342bfeb35fabdb51d70083ec42c2c3361d17502.91e1583d6f14ec1cc33a9cc4d9e3e2f3', 'david@mail.com',  'david.jpg'),
+('emilia', '76ff13857fd879272b66b006be23c45306ddadc2f43af874469e929d9b49875f9d01324bd3e69813f9bdde8d6c6c2ee860a728f95b44a77e03a648e9532747a5.5fa23a1c76e6fa4796b6d6a3ae48a58f', 'emilia@mail.com', 'emilia.jpg'), 
+('franco', '881ed67b23992782ceb32e1c8e06d19649950375789b3b9391a053e75d50892b354b7ea74df41220fe07b19109fff5c41230a874c19b55a79775826562754ab0.2c4d1e1c3d4a6b1b8d4f1d3b5a79d0b7', 'franco@mail.com', 'franco.jpg'), 
+('giulia', 'a24dea60db99863a8b93893f6d065dbf47e3678d6d160b6072dd865f24e029d58951c998a1cf8cc90a759a3e418309225caac637634c08cbe3a7154548f442bb.6f31d8b3b7a8c9e4a1d5e6f7c9b0a2d3', 'giulia@mail.com', 'giulia.jpg');
+
+
+-- ======================
+-- TABELLA: MODERATORE
+-- ======================
+CREATE TABLE Moderatore (
+    username VARCHAR(30) PRIMARY KEY,
+    dataNomina DATE,
+    amministratore BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (username) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+);
+
+INSERT INTO Moderatore VALUES 
+  ('alice', '2024-01-10', TRUE),
+  ('emilia', '2024-06-01', FALSE);
+
+
+-- ======================
+-- TABELLA: POST
+-- ======================
+CREATE TABLE Post (
+    idPost SERIAL PRIMARY KEY,
+    testo TEXT,
+    immagine VARCHAR(255),
+    tipo VARCHAR(10) CHECK (tipo IN ('testo', 'immagine')),
+    usernameCreatore VARCHAR(30) NOT NULL,
+    dataOraPubblicazione TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usernameCreatore) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+);
+
+INSERT INTO Post (testo, immagine, tipo, usernameCreatore, dataOraPubblicazione) VALUES 
+  ('Ciao mondo!', NULL, 'testo', 'alice', '2025-07-08 12:00:00'),
+  ('Benvenuti nel mio profilo!', NULL, 'testo', 'emilia', '2025-07-09 10:30:00'),
+  (NULL, 'franco_pic.jpg', 'immagine', 'franco', '2025-07-09 16:45:00'),
+  ('Che bella giornata!', NULL, 'testo', 'david', '2025-07-16 09:00:00'),         
+  (NULL, 'cane_divertente.jpg', 'immagine', 'giulia', '2025-07-16 10:00:00'),     
+  ('Qualcuno vuole unirsi alla mia live?', NULL, 'testo', 'franco', '2025-07-16 11:30:00'),
+  (NULL, 'tramonto_montagna.jpg', 'immagine', 'david', '2025-07-16 13:00:00');    
+
+-- ======================
+-- TABELLA: MIPIACE
+-- ======================
+CREATE TABLE MiPiace (
+    username VARCHAR(30),
+    idPost INTEGER,
+    PRIMARY KEY (username, idPost),
+    FOREIGN KEY (username) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE,
+    FOREIGN KEY (idPost) REFERENCES Post(idPost)
+      ON DELETE CASCADE
+);
+
+INSERT INTO MiPiace VALUES 
+  ('giulia', 3),
+  ('david', 1),
+  ('alice', 2);
+
+
+-- ======================
+-- TABELLA: SEGUIRE
+-- ======================
+CREATE TABLE Seguire (
+    segue VARCHAR(30),
+    seguito VARCHAR(30),
+    PRIMARY KEY (segue, seguito),
+    FOREIGN KEY (segue) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE,
+    FOREIGN KEY (seguito) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+);
+
+INSERT INTO Seguire VALUES 
+  ('alice', 'emilia'),
+  ('emilia', 'franco'),
+  ('david', 'giulia');
+
+
+-- ======================
+-- TABELLA: MODERA
+-- ======================
+CREATE TABLE Modera (
+    username VARCHAR(30),
+    idPost INTEGER,
+    dataOraModerazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (username, idPost),
+    FOREIGN KEY (username) REFERENCES Moderatore(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE,
+    FOREIGN KEY (idPost) REFERENCES Post(idPost)
+      ON DELETE CASCADE
+);
+
+INSERT INTO Modera VALUES 
+  ('alice', 2),
+  ('emilia', 3);
+
+
+
+-- ======================
+-- TABELLA: FLAGGARE
+-- ======================
+CREATE TABLE Flaggare (
+    username VARCHAR(30),
+    idPost INTEGER,
+    PRIMARY KEY (username, idPost),
+    FOREIGN KEY (username) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE,
+    FOREIGN KEY (idPost) REFERENCES Post(idPost)
+      ON DELETE CASCADE
+);
+
+INSERT INTO Flaggare VALUES 
+  ('giulia', 3),
+  ('david', 3),
+  ('giulia', 4),
+  ('alice', 6);
+
+-- ======================
+-- TABELLA: SESSIONE
+-- ======================
+CREATE TABLE Sessione (
+    idSessione SERIAL PRIMARY KEY,
+    dataOraInizio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dataOraFine TIMESTAMP,
+    username VARCHAR(30) NOT NULL,
+    FOREIGN KEY (username) REFERENCES Utente(username)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+);
+
+INSERT INTO Sessione (dataOraInizio, dataOraFine, username) VALUES 
+  ('2025-07-11 08:00:00', NULL, 'alice'),
+  ('2025-07-11 09:30:00', NULL, 'emilia'),
+  ('2025-07-10 14:00:00', '2025-07-10 16:00:00', 'franco');
