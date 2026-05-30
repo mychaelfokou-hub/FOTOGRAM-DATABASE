@@ -1,6 +1,7 @@
-Per l'esame universitario di Basi di Dati ho progettato e sviluppato Fotogram, il backend RESTful di un social network orientato alla condivisione di immagini, fortemente ispirato alle dinamiche di Instagram. 
+Ecco una traduzione professionale, fluida e adatta a un curriculum o a un portfolio progetti:
 
-Il progetto mi ha permesso di gestire in autonomia l'intero ciclo di vita dell'informazione: dalla modellazione concettuale dei dati fino all'implementazione e all'esposizione sicura delle API tramite Node.js
+For my university Database exam, I designed and developed Fotogram, a RESTful backend for a social network focused on image sharing, heavily inspired by the core mechanics of Instagram.
 
-Per informazioni più approfondite consultare la documentazione :-)
+This project allowed me to independently manage the entire data lifecycle: from conceptual data modeling to the actual implementation and secure exposure of the APIs using Node.js.
 
+For more detailed information, please refer to the documentation. :-)
